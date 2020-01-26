@@ -1,0 +1,58 @@
+#!/bin/bash
+#INSTALL@ /usr/local/bin/configyour.photozip
+WD=`pwd`
+BASE=`basename $WD`
+
+
+not_applicable(){
+	echo "tag/photozip: |tag" >> Makefile
+	echo "	touch tag/photozip" >> Makefile
+	echo 'tag/clean.photozip:' >> Makefile
+	echo '	touch tag/clean.photozip' >> Makefile
+	exit 0
+}
+
+
+
+# Check if applicable
+if [ ! -f imagelist ] ; then
+	not_applicable
+fi
+
+
+if grep -q '^TYPE *PHOTOZIP' imagelist ; then
+	banner photozip >> Makefile
+else
+	not_applicable
+fi
+
+mkdir -p tgz
+
+echo "tag/photozip: tgz/$BASE.tgz www/photozip.html |tag" >> Makefile
+echo "	touch tag/photozip" >> Makefile
+
+echo "tgz/$BASE.tgz: tag/photo" >> Makefile
+echo "	cd images && tar cvzf $WD/tgz/$BASE.tgz fullsize" >> Makefile
+echo "" >> Makefile
+
+
+echo "www/photozip.html: photozip.html |tag" >> Makefile
+echo "	cp photozip.html www/photozip.html" >> Makefile
+echo "photozip.html: tgz/$BASE.tgz Makefile" >> Makefile
+echo "	echo '<!DOCTYPE html>' > photozip.html" >> Makefile
+echo "	echo '<html lang=\"en\">' >> photozip.html" >> Makefile
+echo "	echo '	<head>' >> photozip.html" >> Makefile
+echo "	echo '		<title>$BASE</title>' >> photozip.html" >> Makefile
+echo "	echo '		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">' >> photozip.html" >> Makefile
+echo "	echo '		<link href=\"stylesheet.css\" type=\"text/css\" rel=\"stylesheet\" />' >> photozip.html" >> Makefile
+echo "	echo '	</head>' >> photozip.html" >> Makefile
+echo "	echo '	<body>' >> photozip.html" >> Makefile
+echo "	echo '		<h1>$BASE: download archive<h1>' >> photozip.html" >> Makefile
+echo "	echo '		<a href=\"tgz/$BASE.tgz\">$BASE.tgz</a>' >> photozip.html" >> Makefile
+echo "	echo '	</body>' >> photozip.html" >> Makefile
+
+echo 'tag/clean.photozip:' >> Makefile
+echo "	sudo rm -fr tgz/$BASE.tgz" >> Makefile
+echo "	sudo rm -f photozip.html" >> Makefile
+echo '	touch tag/clean.photozip' >> Makefile
+			
