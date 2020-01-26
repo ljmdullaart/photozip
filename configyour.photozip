@@ -2,9 +2,17 @@
 #INSTALL@ /usr/local/bin/configyour.photozip
 WD=`pwd`
 BASE=`basename $WD`
+LOG=configyour.log
+echo "$0 starting" >> $LOG
+if [ -x /usr/local/bin/my_banner ] ; then
+	banner=/usr/local/bin/my_banner
+else
+	banner=banner
+fi
 
 
 not_applicable(){
+	echo "Not appliacble" >> $LOG
 	echo "tag/photozip: |tag" >> Makefile
 	echo "	touch tag/photozip" >> Makefile
 	echo 'tag/clean.photozip:' >> Makefile
@@ -16,13 +24,15 @@ not_applicable(){
 
 # Check if applicable
 if [ ! -f imagelist ] ; then
+	echo "No imagelist file" >> $LOG
 	not_applicable
 fi
 
 
 if grep -q '^TYPE *PHOTOZIP' imagelist ; then
-	banner photozip >> Makefile
+	$banner photozip >> Makefile
 else
+	echo "No 'TYPE PHOTOZIP' in imagelist" >> $LOG
 	not_applicable
 fi
 
