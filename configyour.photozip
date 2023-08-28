@@ -25,6 +25,7 @@ not_applicable(){
 # Check if applicable
 if [ ! -f imagelist ] ; then
 	echo "No imagelist file" >> $LOG
+	echo "No imagelist file"
 	not_applicable
 fi
 
@@ -38,11 +39,14 @@ fi
 
 mkdir -p tgz
 
-echo "tag/photozip: tgz/$BASE.tgz www/photozip.html |tag" >> Makefile
+echo "tag/photozip: tgz/$BASE.tgz tgz/$BASE.zip www/photozip.html |tag" >> Makefile
 echo "	touch tag/photozip" >> Makefile
 
 echo "tgz/$BASE.tgz: tag/photo" >> Makefile
 echo "	cd images && tar cvzf $WD/tgz/$BASE.tgz fullsize" >> Makefile
+echo "" >> Makefile
+echo "tgz/$BASE.zip: tag/photo" >> Makefile
+echo "	cd images && zip -r $WD/tgz/$BASE.zip fullsize" >> Makefile
 echo "" >> Makefile
 
 
@@ -58,7 +62,7 @@ echo "	echo '		<link href=\"stylesheet.css\" type=\"text/css\" rel=\"stylesheet\
 echo "	echo '	</head>' >> photozip.html" >> Makefile
 echo "	echo '	<body>' >> photozip.html" >> Makefile
 echo "	echo '		<h1>$BASE: download archive<h1>' >> photozip.html" >> Makefile
-echo "	echo '		<a href=\"tgz/$BASE.tgz\">$BASE.tgz</a>' >> photozip.html" >> Makefile
+echo "	echo '		<a href=\"tgz/$BASE.zip\">$BASE.zip</a>' >> photozip.html" >> Makefile
 echo "	echo '	</body>' >> photozip.html" >> Makefile
 
 echo 'tag/clean.photozip:' >> Makefile
